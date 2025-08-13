@@ -1,32 +1,40 @@
 
-## Flutter Notes & To-Do App
 
-This is a simple Flutter application for managing notes and to-do lists, with user authentication and modern app structure.
+# 📝 Flutter Notes & To-Do App 🚀
 
-### Features
-- User sign up, login, and logout
-- Add, edit, and delete notes
-- Add, check, and delete to-do items
-- Profile page and theme (dark/light mode)
-- Backup & restore (template)
-- Reminder (template)
 
-### How to Run
-1. Make sure you have [Flutter SDK](https://docs.flutter.dev/get-started/install) installed.
-2. Open terminal in the project folder:
-	```
+Sebuah aplikasi Flutter sederhana untuk mencatat dan mengelola to-do, dengan autentikasi user dan tampilan modern.
+
+
+### ✨ Fitur Utama
+- 🔐 User sign up, login, dan logout
+- 📝 Tambah, edit, hapus catatan
+- ✅ Tambah, cek, hapus to-do
+- 👤 Halaman profil & tema (dark/light mode)
+- 💾 Backup & restore (template)
+- ⏰ Reminder (template)
+
+
+### ▶️ Cara Menjalankan
+1. Pastikan sudah install [Flutter SDK](https://docs.flutter.dev/get-started/install) 🛠️
+2. Buka terminal di folder project:
+	```sh
 	cd path/to/your/project
 	flutter pub get
 	flutter run
 	```
-3. Use an emulator/device (Android/iOS) or run on Windows/Web after running `flutter create .`
+3. Jalankan di emulator/device (Android/iOS) atau di Windows/Web setelah `flutter create .` 📱💻
 
-### Folder Structure
-- `lib/pages/` : All app pages (notes, todos, auth, profile, etc)
+
+### 📁 Struktur Folder
+- `lib/pages/` : Semua halaman aplikasi (notes, todos, auth, profile, dll)
 - `lib/models/` : Data models
-- `lib/services/` : Business logic & storage
-- `lib/widgets/` : Reusable UI components
+- `lib/services/` : Logic & penyimpanan
+- `lib/widgets/` : Komponen UI reusable
 - `lib/utils/` : Utilities
 
+
 ---
+
+
 
