@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../models/note.dart';
 import '../../services/note_service.dart';
@@ -36,81 +37,90 @@ class _NotesPageState extends State<NotesPage> {
     final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(title: const Text('Catatan')),
+      appBar: AppBar(title: const Text('Catatan'), backgroundColor: theme.colorScheme.surface.withOpacity(0.7), elevation: 0),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                TextField(
-                  controller: _titleController,
-                  style: theme.textTheme.bodyLarge,
-                  decoration: InputDecoration(
-                    labelText: 'Judul',
-                    labelStyle: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.primary),
-                    filled: true,
-                    fillColor: theme.cardColor,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: theme.dividerColor),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _contentController,
-                  style: theme.textTheme.bodyLarge,
-                  decoration: InputDecoration(
-                    labelText: 'Isi Catatan',
-                    labelStyle: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.primary),
-                    filled: true,
-                    fillColor: theme.cardColor,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: theme.dividerColor),
-                    ),
-                  ),
-                  minLines: 1,
-                  maxLines: 3,
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: theme.colorScheme.onPrimary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                    child: TextField(
+                      controller: _titleController,
+                      style: theme.textTheme.bodySmall?.copyWith(fontSize: 13),
+                      decoration: const InputDecoration(
+                        hintText: 'Judul',
+                        border: UnderlineInputBorder(),
+                        filled: false,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      textStyle: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                     ),
-                    onPressed: _addNote,
-                    child: const Text('Tambah Catatan'),
                   ),
+                ),
+                const SizedBox(height: 2),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                    child: TextField(
+                      controller: _contentController,
+                      style: theme.textTheme.bodySmall?.copyWith(fontSize: 13),
+                      decoration: const InputDecoration(
+                        hintText: 'Isi Catatan',
+                        border: UnderlineInputBorder(),
+                        filled: false,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                      ),
+                      minLines: 1,
+                      maxLines: 3,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    foregroundColor: theme.colorScheme.primary,
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    textStyle: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold, fontSize: 13),
+                  ),
+                  onPressed: _addNote,
+                  child: const Text('Tambah Catatan'),
                 ),
               ],
             ),
           ),
-          Divider(color: theme.dividerColor),
+          Divider(color: theme.dividerColor, height: 4, thickness: 0.5),
           Expanded(
             child: ListView.builder(
               itemCount: notes.length,
               itemBuilder: (context, index) {
                 final note = notes[index];
-                return Card(
-                  color: theme.cardColor,
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  child: ListTile(
-                    title: Text(note.title, style: theme.textTheme.titleLarge),
-                    subtitle: Text(note.content, style: theme.textTheme.bodyMedium),
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete, color: theme.colorScheme.error),
-                      onPressed: () => _deleteNote(index),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                      child: Card(
+                        color: theme.cardColor.withOpacity(0.25),
+                        margin: EdgeInsets.zero,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        elevation: 0,
+                        child: ListTile(
+                          title: Text(note.title, style: theme.textTheme.bodyMedium?.copyWith(fontSize: 13)),
+                          subtitle: Text(note.content, style: theme.textTheme.bodySmall?.copyWith(fontSize: 12)),
+                          trailing: IconButton(
+                            icon: Icon(Icons.delete, color: theme.colorScheme.error, size: 18),
+                            onPressed: () => _deleteNote(index),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          minLeadingWidth: 0,
+                        ),
+                      ),
                     ),
                   ),
                 );
