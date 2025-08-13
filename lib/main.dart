@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'pages/notes/notes_page.dart';
 import 'pages/todos/todos_page.dart';
 import 'pages/auth/login_page.dart';
-import 'pages/auth/signup_page.dart';
+
 import 'pages/profile/profile_page.dart';
 import 'pages/settings/settings_page.dart';
 import 'pages/backup/backup_page.dart';
@@ -124,35 +124,108 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
+  void _showLoginDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Login Required'),
+        content: const Text('Please login to access this feature.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _openDrawerPage(LoginPage(
+                onSignUpTap: widget.onShowSignUp,
+                onLoginSuccess: widget.onLogin,
+              ));
+            },
+            child: const Text('Login'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Jika user ingin login/signup, tampilkan halaman login/signup
-    if (!widget.isLoggedIn && widget.showSignUp) {
-      return SignUpPage(onLoginTap: widget.onBackToLogin);
-    }
-    if (!widget.isLoggedIn && !widget.showSignUp) {
-      return LoginPage(
-        onSignUpTap: widget.onShowSignUp,
-        onLoginSuccess: widget.onLogin,
-      );
-    }
-    // Jika sudah login, tampilkan main app
     return Scaffold(
-      appBar: null,
+      appBar: AppBar(
+        title: const Text('Flutter Notes & To-Do'),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
+      ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
-              child: Text('Menu', style: TextStyle(color: Colors.white, fontSize: 24)),
-            ),
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Profil'),
+            GestureDetector(
               onTap: () {
                 Navigator.pop(context);
-                _openDrawerPage(ProfilePage(onLogout: widget.onLogout));
+                if (widget.isLoggedIn) {
+                  _openDrawerPage(ProfilePage(onLogout: widget.onLogout));
+                } else {
+                  // Tampilkan login/signup dari profile
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Login Required'),
+                      content: const Text('Please login to access your profile.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            _openDrawerPage(LoginPage(
+                              onSignUpTap: widget.onShowSignUp,
+                              onLoginSuccess: widget.onLogin,
+                            ));
+                          },
+                          child: const Text('Login'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Cancel'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
+              child: UserAccountsDrawerHeader(
+                accountName: Text(widget.isLoggedIn ? 'User' : 'Guest'),
+                accountEmail: Text(widget.isLoggedIn ? 'user@email.com' : 'Not logged in'),
+                currentAccountPicture: const CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.person, size: 40, color: Colors.blue),
+                ),
+                decoration: const BoxDecoration(color: Colors.blue),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.note),
+              title: const Text('Catatan'),
+              onTap: () {
+                Navigator.pop(context);
+                setState(() => _selectedIndex = 0);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.check_box),
+              title: const Text('To-Do'),
+              onTap: () {
+                Navigator.pop(context);
+                setState(() => _selectedIndex = 1);
               },
             ),
             ListTile(
@@ -179,88 +252,126 @@ class _MainPageState extends State<MainPage> {
                 _openDrawerPage(const ReminderPage());
               },
             ),
-            if (widget.isLoggedIn) ...[
-              ListTile(
-                leading: const Icon(Icons.lightbulb),
-                title: const Text('AI Suggestions'),
-                onTap: () {
-                  Navigator.pop(context);
+            ListTile(
+              leading: const Icon(Icons.lightbulb),
+              title: const Text('AI Suggestions'),
+              onTap: () {
+                Navigator.pop(context);
+                if (widget.isLoggedIn) {
                   _openDrawerPage(const AiSuggestionsPage());
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.mic),
-                title: const Text('Voice Notes'),
-                onTap: () {
-                  Navigator.pop(context);
+                } else {
+                  _showLoginDialog(context);
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.mic),
+              title: const Text('Voice Notes'),
+              onTap: () {
+                Navigator.pop(context);
+                if (widget.isLoggedIn) {
                   _openDrawerPage(const VoiceNotesPage());
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.gesture),
-                title: const Text('Handwriting'),
-                onTap: () {
-                  Navigator.pop(context);
+                } else {
+                  _showLoginDialog(context);
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.gesture),
+              title: const Text('Handwriting'),
+              onTap: () {
+                Navigator.pop(context);
+                if (widget.isLoggedIn) {
                   _openDrawerPage(const HandwritingPage());
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.emoji_emotions),
-                title: const Text('Mood Tracker'),
-                onTap: () {
-                  Navigator.pop(context);
+                } else {
+                  _showLoginDialog(context);
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.emoji_emotions),
+              title: const Text('Mood Tracker'),
+              onTap: () {
+                Navigator.pop(context);
+                if (widget.isLoggedIn) {
                   _openDrawerPage(const MoodTrackerPage());
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.track_changes),
-                title: const Text('Habit Tracker'),
-                onTap: () {
-                  Navigator.pop(context);
+                } else {
+                  _showLoginDialog(context);
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.track_changes),
+              title: const Text('Habit Tracker'),
+              onTap: () {
+                Navigator.pop(context);
+                if (widget.isLoggedIn) {
                   _openDrawerPage(const HabitTrackerPage());
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.location_on),
-                title: const Text('Location Reminder'),
-                onTap: () {
-                  Navigator.pop(context);
+                } else {
+                  _showLoginDialog(context);
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.location_on),
+              title: const Text('Location Reminder'),
+              onTap: () {
+                Navigator.pop(context);
+                if (widget.isLoggedIn) {
                   _openDrawerPage(const LocationReminderPage());
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.group),
-                title: const Text('Collaboration'),
-                onTap: () {
-                  Navigator.pop(context);
+                } else {
+                  _showLoginDialog(context);
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.group),
+              title: const Text('Collaboration'),
+              onTap: () {
+                Navigator.pop(context);
+                if (widget.isLoggedIn) {
                   _openDrawerPage(const CollaborationPage());
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.attach_file),
-                title: const Text('Attachment & Scan'),
-                onTap: () {
-                  Navigator.pop(context);
+                } else {
+                  _showLoginDialog(context);
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.attach_file),
+              title: const Text('Attachment & Scan'),
+              onTap: () {
+                Navigator.pop(context);
+                if (widget.isLoggedIn) {
                   _openDrawerPage(const AttachmentPage());
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.calendar_today),
-                title: const Text('Calendar Sync'),
-                onTap: () {
-                  Navigator.pop(context);
+                } else {
+                  _showLoginDialog(context);
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.calendar_today),
+              title: const Text('Calendar Sync'),
+              onTap: () {
+                Navigator.pop(context);
+                if (widget.isLoggedIn) {
                   _openDrawerPage(const CalendarSyncPage());
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.emoji_events),
-                title: const Text('Gamification'),
-                onTap: () {
-                  Navigator.pop(context);
+                } else {
+                  _showLoginDialog(context);
+                }
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.emoji_events),
+              title: const Text('Gamification'),
+              onTap: () {
+                Navigator.pop(context);
+                if (widget.isLoggedIn) {
                   _openDrawerPage(const GamificationPage());
-                },
-              ),
-            ],
+                } else {
+                  _showLoginDialog(context);
+                }
+              },
+            ),
             const Divider(),
             if (widget.isLoggedIn)
               ListTile(
@@ -294,6 +405,5 @@ class _MainPageState extends State<MainPage> {
         ],
       ),
     );
-  }
   }
 }
