@@ -1,10 +1,18 @@
+
 import 'package:flutter/material.dart';
+import '../models/user.dart';
+import '../services/user_service.dart';
+import '../widgets/custom_button.dart';
+import '../utils/snackbar.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final userService = UserService();
+    final User user = userService.getCurrentUser();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Beranda'),
@@ -13,9 +21,14 @@ class HomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'Selamat Datang di Flutter!',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            Text(
+              'Halo, ${user.name}!',
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              user.email,
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 24),
             Image.network(
@@ -23,13 +36,11 @@ class HomePage extends StatelessWidget {
               width: 180,
             ),
             const SizedBox(height: 24),
-            ElevatedButton(
+            CustomButton(
+              label: 'Tekan Saya',
               onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Tombol ditekan!')),
-                );
+                showSimpleSnackbar(context, 'Tombol ditekan!');
               },
-              child: const Text('Tekan Saya'),
             ),
           ],
         ),
