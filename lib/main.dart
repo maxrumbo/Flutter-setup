@@ -3,6 +3,10 @@ import 'pages/notes/notes_page.dart';
 import 'pages/todos/todos_page.dart';
 import 'pages/auth/login_page.dart';
 import 'pages/auth/signup_page.dart';
+import 'pages/profile/profile_page.dart';
+import 'pages/settings/settings_page.dart';
+import 'pages/backup/backup_page.dart';
+import 'pages/reminder/reminder_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,6 +23,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   bool _isLoggedIn = false;
   bool _showSignUp = false;
+  bool _isDarkMode = false;
 
   void _goToSignUp() {
     setState(() {
@@ -38,16 +43,31 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  void _logout() {
+    setState(() {
+      _isLoggedIn = false;
+      _showSignUp = false;
+    });
+  }
+
+  void _toggleTheme(bool value) {
+    setState(() {
+      _isDarkMode = value;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Catatan & To-Do',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: _isDarkMode ? ThemeData.dark() : ThemeData(primarySwatch: Colors.blue),
       debugShowCheckedModeBanner: false,
       home: _isLoggedIn
-          ? const MainPage()
+          ? MainPage(
+              onLogout: _logout,
+              isDarkMode: _isDarkMode,
+              onThemeChanged: _toggleTheme,
+            )
           : (_showSignUp
               ? SignUpPage(onLoginTap: _goToLogin)
               : LoginPage(onSignUpTap: _goToSignUp, onLoginSuccess: _loginSuccess)),
@@ -56,7 +76,10 @@ class _MyAppState extends State<MyApp> {
 }
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  final VoidCallback onLogout;
+  final bool isDarkMode;
+  final ValueChanged<bool> onThemeChanged;
+  const MainPage({super.key, required this.onLogout, required this.isDarkMode, required this.onThemeChanged});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -69,9 +92,68 @@ class _MainPageState extends State<MainPage> {
     const TodosPage(),
   ];
 
+  void _openDrawerPage(Widget page) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => page),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: null,
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Colors.blue),
+              child: Text('Menu', style: TextStyle(color: Colors.white, fontSize: 24)),
+            ),
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('Profil'),
+              onTap: () {
+                Navigator.pop(context);
+                _openDrawerPage(ProfilePage(onLogout: widget.onLogout));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Pengaturan'),
+              onTap: () {
+                Navigator.pop(context);
+                _openDrawerPage(SettingsPage(isDarkMode: widget.isDarkMode, onThemeChanged: widget.onThemeChanged));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.backup),
+              title: const Text('Backup & Restore'),
+              onTap: () {
+                Navigator.pop(context);
+                _openDrawerPage(const BackupPage());
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.notifications),
+              title: const Text('Reminder'),
+              onTap: () {
+                Navigator.pop(context);
+                _openDrawerPage(const ReminderPage());
+              },
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Logout'),
+              onTap: () {
+                Navigator.pop(context);
+                widget.onLogout();
+              },
+            ),
+          ],
+        ),
+      ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
