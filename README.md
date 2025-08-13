@@ -29,4 +29,4 @@ This is a simple Flutter application for managing notes and to-do lists, with us
 - `lib/utils/` : Utilities
 
 ---
-Made with Flutter ❤️
+
