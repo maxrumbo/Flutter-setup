@@ -1,4 +1,6 @@
+
 import 'package:flutter/material.dart';
+import '../../services/auth_service.dart';
 
 class SignUpPage extends StatefulWidget {
   final VoidCallback onLoginTap;
@@ -13,40 +15,61 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmController = TextEditingController();
   String? _error;
+  bool _loading = false;
+  final AuthService _authService = AuthService();
 
-  void _signUp() {
+  void _signUp() async {
     setState(() {
       _error = null;
+      _loading = true;
     });
-    if (_passwordController.text != _confirmController.text) {
-      setState(() {
-        _error = 'Password tidak sama';
-      });
-      return;
-    }
-    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+    final confirm = _confirmController.text;
+    if (email.isEmpty || password.isEmpty) {
       setState(() {
         _error = 'Email dan password wajib diisi';
+        _loading = false;
       });
       return;
     }
-    // Simulasi sukses
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Berhasil'),
-        content: const Text('Akun berhasil dibuat!'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              widget.onLoginTap();
-            },
-            child: const Text('Login'),
-          ),
-        ],
-      ),
-    );
+    if (password != confirm) {
+      setState(() {
+        _error = 'Password tidak sama';
+        _loading = false;
+      });
+      return;
+    }
+    final exists = await _authService.isEmailRegistered(email);
+    if (exists) {
+      setState(() {
+        _error = 'Email sudah terdaftar';
+        _loading = false;
+      });
+      return;
+    }
+    await _authService.registerUser(email, password);
+    setState(() {
+      _loading = false;
+    });
+    if (mounted) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Berhasil'),
+          content: const Text('Akun berhasil dibuat!'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                widget.onLoginTap();
+              },
+              child: const Text('Login'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   @override
@@ -77,10 +100,12 @@ class _SignUpPageState extends State<SignUpPage> {
               Text(_error!, style: const TextStyle(color: Colors.red)),
             ],
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _signUp,
-              child: const Text('Daftar'),
-            ),
+            _loading
+                ? const CircularProgressIndicator()
+                : ElevatedButton(
+                    onPressed: _signUp,
+                    child: const Text('Daftar'),
+                  ),
             TextButton(
               onPressed: widget.onLoginTap,
               child: const Text('Sudah punya akun? Login'),
