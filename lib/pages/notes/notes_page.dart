@@ -33,42 +33,85 @@ class _NotesPageState extends State<NotesPage> {
   @override
   Widget build(BuildContext context) {
     final notes = _noteService.getNotes();
+    final theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(title: const Text('Catatan')),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 TextField(
                   controller: _titleController,
-                  decoration: const InputDecoration(labelText: 'Judul'),
+                  style: theme.textTheme.bodyLarge,
+                  decoration: InputDecoration(
+                    labelText: 'Judul',
+                    labelStyle: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.primary),
+                    filled: true,
+                    fillColor: theme.cardColor,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: theme.dividerColor),
+                    ),
+                  ),
                 ),
+                const SizedBox(height: 12),
                 TextField(
                   controller: _contentController,
-                  decoration: const InputDecoration(labelText: 'Isi Catatan'),
+                  style: theme.textTheme.bodyLarge,
+                  decoration: InputDecoration(
+                    labelText: 'Isi Catatan',
+                    labelStyle: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.primary),
+                    filled: true,
+                    fillColor: theme.cardColor,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: theme.dividerColor),
+                    ),
+                  ),
+                  minLines: 1,
+                  maxLines: 3,
                 ),
-                const SizedBox(height: 8),
-                ElevatedButton(
-                  onPressed: _addNote,
-                  child: const Text('Tambah Catatan'),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.colorScheme.primary,
+                      foregroundColor: theme.colorScheme.onPrimary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      textStyle: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    onPressed: _addNote,
+                    child: const Text('Tambah Catatan'),
+                  ),
                 ),
               ],
             ),
           ),
-          const Divider(),
+          Divider(color: theme.dividerColor),
           Expanded(
             child: ListView.builder(
               itemCount: notes.length,
               itemBuilder: (context, index) {
                 final note = notes[index];
-                return ListTile(
-                  title: Text(note.title),
-                  subtitle: Text(note.content),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () => _deleteNote(index),
+                return Card(
+                  color: theme.cardColor,
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  child: ListTile(
+                    title: Text(note.title, style: theme.textTheme.titleLarge),
+                    subtitle: Text(note.content, style: theme.textTheme.bodyMedium),
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete, color: theme.colorScheme.error),
+                      onPressed: () => _deleteNote(index),
+                    ),
                   ),
                 );
               },

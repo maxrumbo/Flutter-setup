@@ -12,8 +12,10 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final userService = UserService();
     final User user = userService.getCurrentUser();
+    final theme = Theme.of(context);
 
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Beranda'),
       ),
@@ -23,12 +25,12 @@ class HomePage extends StatelessWidget {
           children: [
             Text(
               'Halo, ${user.name}!',
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
               user.email,
-              style: const TextStyle(fontSize: 16, color: Colors.grey),
+              style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.secondary),
             ),
             const SizedBox(height: 24),
             Image.network(
@@ -39,7 +41,7 @@ class HomePage extends StatelessWidget {
             CustomButton(
               label: 'Tekan Saya',
               onPressed: () {
-                showSimpleSnackbar(context, 'Tombol ditekan!');
+                showSnackbar(context, 'Tombol ditekan!');
               },
             ),
           ],

@@ -7,14 +7,17 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(title: const Text('Pengaturan')),
       body: ListView(
         children: [
           SwitchListTile(
-            title: const Text('Mode Gelap'),
+            title: Text('Mode Gelap', style: theme.textTheme.bodyLarge),
             value: isDarkMode,
             onChanged: onThemeChanged,
+            activeColor: theme.colorScheme.primary,
           ),
         ],
       ),

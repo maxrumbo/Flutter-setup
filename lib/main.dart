@@ -33,7 +33,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   bool _isLoggedIn = false;
   bool _showSignUp = false;
-  bool _isDarkMode = false;
+  bool _isDarkMode = true;
 
   void _goToSignUp() {
     setState(() {
@@ -68,9 +68,85 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData tokyoNightDark = ThemeData(
+      brightness: Brightness.dark,
+      primaryColor: const Color(0xFF1a1b26),
+      scaffoldBackgroundColor: const Color(0xFF1a1b26),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Color(0xFF16161e),
+        foregroundColor: Color(0xFFc0caf5),
+        elevation: 0,
+      ),
+      drawerTheme: const DrawerThemeData(
+        backgroundColor: Color(0xFF16161e),
+      ),
+      colorScheme: ColorScheme.dark(
+        primary: Color(0xFF7aa2f7),
+        secondary: Color(0xFFbb9af7),
+        background: Color(0xFF1a1b26),
+        surface: Color(0xFF16161e),
+        onPrimary: Color(0xFF1a1b26),
+        onSecondary: Color(0xFF1a1b26),
+        onBackground: Color(0xFFc0caf5),
+        onSurface: Color(0xFFc0caf5),
+        error: Color(0xFFf7768e),
+        onError: Color(0xFF1a1b26),
+      ),
+      iconTheme: const IconThemeData(color: Color(0xFF7aa2f7)),
+      textTheme: const TextTheme(
+        bodyLarge: TextStyle(color: Color(0xFFc0caf5)),
+        bodyMedium: TextStyle(color: Color(0xFFc0caf5)),
+        titleLarge: TextStyle(color: Color(0xFF7aa2f7)),
+      ),
+      dividerColor: Color(0xFF292e42),
+      cardColor: Color(0xFF24283b),
+      switchTheme: SwitchThemeData(
+        thumbColor: MaterialStatePropertyAll(Color(0xFF7aa2f7)),
+        trackColor: MaterialStatePropertyAll(Color(0xFF292e42)),
+      ),
+    );
+
+    final ThemeData modernLight = ThemeData(
+      brightness: Brightness.light,
+      primaryColor: const Color(0xFF7aa2f7),
+      scaffoldBackgroundColor: const Color(0xFFF7F8FA),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Color(0xFFF7F8FA),
+        foregroundColor: Color(0xFF1a1b26),
+        elevation: 0,
+      ),
+      drawerTheme: const DrawerThemeData(
+        backgroundColor: Color(0xFFF7F8FA),
+      ),
+      colorScheme: ColorScheme.light(
+        primary: Color(0xFF7aa2f7),
+        secondary: Color(0xFFbb9af7),
+        background: Color(0xFFF7F8FA),
+        surface: Color(0xFFFFFFFF),
+        onPrimary: Color(0xFFFFFFFF),
+        onSecondary: Color(0xFF1a1b26),
+        onBackground: Color(0xFF1a1b26),
+        onSurface: Color(0xFF1a1b26),
+        error: Color(0xFFf7768e),
+        onError: Color(0xFFFFFFFF),
+      ),
+      iconTheme: const IconThemeData(color: Color(0xFF7aa2f7)),
+      textTheme: const TextTheme(
+        bodyLarge: TextStyle(color: Color(0xFF1a1b26)),
+        bodyMedium: TextStyle(color: Color(0xFF1a1b26)),
+        titleLarge: TextStyle(color: Color(0xFF7aa2f7)),
+      ),
+      dividerColor: Color(0xFFe0e3e8),
+      cardColor: Color(0xFFFFFFFF),
+      switchTheme: SwitchThemeData(
+        thumbColor: MaterialStatePropertyAll(Color(0xFF7aa2f7)),
+        trackColor: MaterialStatePropertyAll(Color(0xFFbb9af7)),
+      ),
+    );
+
     return MaterialApp(
       title: 'Catatan & To-Do',
-      theme: _isDarkMode ? ThemeData.dark() : ThemeData(primarySwatch: Colors.blue),
+      theme: _isDarkMode ? tokyoNightDark : modernLight,
       debugShowCheckedModeBanner: false,
       home: MainPage(
         onLogout: _logout,
