@@ -62,15 +62,16 @@ class _MyAppState extends State<MyApp> {
       title: 'Catatan & To-Do',
       theme: _isDarkMode ? ThemeData.dark() : ThemeData(primarySwatch: Colors.blue),
       debugShowCheckedModeBanner: false,
-      home: _isLoggedIn
-          ? MainPage(
-              onLogout: _logout,
-              isDarkMode: _isDarkMode,
-              onThemeChanged: _toggleTheme,
-            )
-          : (_showSignUp
-              ? SignUpPage(onLoginTap: _goToLogin)
-              : LoginPage(onSignUpTap: _goToSignUp, onLoginSuccess: _loginSuccess)),
+      home: MainPage(
+        onLogout: _logout,
+        isDarkMode: _isDarkMode,
+        onThemeChanged: _toggleTheme,
+        isLoggedIn: _isLoggedIn,
+        onLogin: _loginSuccess,
+        onShowSignUp: _goToSignUp,
+        showSignUp: _showSignUp,
+        onBackToLogin: _goToLogin,
+      ),
     );
   }
 }
@@ -79,7 +80,22 @@ class MainPage extends StatefulWidget {
   final VoidCallback onLogout;
   final bool isDarkMode;
   final ValueChanged<bool> onThemeChanged;
-  const MainPage({super.key, required this.onLogout, required this.isDarkMode, required this.onThemeChanged});
+  final bool isLoggedIn;
+  final VoidCallback onLogin;
+  final VoidCallback onShowSignUp;
+  final bool showSignUp;
+  final VoidCallback onBackToLogin;
+  const MainPage({
+    super.key,
+    required this.onLogout,
+    required this.isDarkMode,
+    required this.onThemeChanged,
+    required this.isLoggedIn,
+    required this.onLogin,
+    required this.onShowSignUp,
+    required this.showSignUp,
+    required this.onBackToLogin,
+  });
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -100,6 +116,17 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Jika user ingin login/signup, tampilkan halaman login/signup
+    if (!widget.isLoggedIn && widget.showSignUp) {
+      return SignUpPage(onLoginTap: widget.onBackToLogin);
+    }
+    if (!widget.isLoggedIn && !widget.showSignUp) {
+      return LoginPage(
+        onSignUpTap: widget.onShowSignUp,
+        onLoginSuccess: widget.onLogin,
+      );
+    }
+    // Jika sudah login, tampilkan main app
     return Scaffold(
       appBar: null,
       drawer: Drawer(
@@ -143,14 +170,15 @@ class _MainPageState extends State<MainPage> {
               },
             ),
             const Divider(),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Logout'),
-              onTap: () {
-                Navigator.pop(context);
-                widget.onLogout();
-              },
-            ),
+            if (widget.isLoggedIn)
+              ListTile(
+                leading: const Icon(Icons.logout),
+                title: const Text('Logout'),
+                onTap: () {
+                  Navigator.pop(context);
+                  widget.onLogout();
+                },
+              ),
           ],
         ),
       ),
