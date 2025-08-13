@@ -281,11 +281,11 @@ class _MainPageState extends State<MainPage> {
               child: UserAccountsDrawerHeader(
                 accountName: Text(widget.isLoggedIn ? 'User' : 'Guest'),
                 accountEmail: Text(widget.isLoggedIn ? 'user@email.com' : 'Not logged in'),
-                currentAccountPicture: const CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: Icon(Icons.person, size: 40, color: Colors.blue),
+                currentAccountPicture: CircleAvatar(
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  child: Icon(Icons.person, size: 40, color: Theme.of(context).colorScheme.primary),
                 ),
-                decoration: const BoxDecoration(color: Colors.blue),
+                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
               ),
             ),
             ListTile(

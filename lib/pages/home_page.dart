@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/user.dart';
 import '../services/user_service.dart';
 import '../widgets/custom_button.dart';
-import '../utils/snackbar.dart';
+
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -41,7 +41,9 @@ class HomePage extends StatelessWidget {
             CustomButton(
               label: 'Tekan Saya',
               onPressed: () {
-                showSnackbar(context, 'Tombol ditekan!');
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Tombol ditekan!')),
+                );
               },
             ),
           ],
